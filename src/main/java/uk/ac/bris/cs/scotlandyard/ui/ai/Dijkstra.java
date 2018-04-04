@@ -6,12 +6,12 @@ import java.util.*;
 
 public class Dijkstra {
     private int INF = 1000;
-    private Graph<Integer,Transport> graph;
-    private Node<Integer> sourceNode;
-    private Set<Node<Integer>> unvisited,visited;
-    private Map<Node<Integer>,Integer> distances = new HashMap<>(); //map of nodes to their distances
+    private Graph<Character,Integer> graph;
+    private Node<Character> sourceNode;
+    private Set<Node<Character>> unvisited,visited;
+    private Map<Node<Character>,Integer> distances = new HashMap<>(); //map of nodes to their distances
 
-    public Dijkstra(Graph<Integer,Transport> gameMap,Node<Integer> sourceNode){
+    public Dijkstra(Graph<Character,Integer> gameMap,Node<Character> sourceNode){
         this.sourceNode = sourceNode;
         visited = new HashSet<>(); //no nodes are yet to be visited
         unvisited = new HashSet<>(gameMap.getNodes()); //all nodes are unvisited at the start
@@ -19,9 +19,9 @@ public class Dijkstra {
         initDistances(distances,unvisited);
         //For now let's assume that all edges have a weight of 1
     }
-    private void initDistances(Map<Node<Integer>,Integer> map,Set<Node<Integer>> unvisited){
+    private void initDistances(Map<Node<Character>,Integer> map,Set<Node<Character>> unvisited){
         //distances from source node should be infinity at start
-        for(Node<Integer> u: unvisited){
+        for(Node<Character> u: unvisited){
             if(u.equals(sourceNode)) //distance from source node should be zero at first
                 map.put(u,0);
             else
@@ -30,11 +30,11 @@ public class Dijkstra {
     }
 
 
-    public Map<Node<Integer>, Integer> getDistances() {
+    public Map<Node<Character>, Integer> getDistances() {
         return distances;
     }
 
-    public Node<Integer> getSourceNode() {
+    public Node<Character> getSourceNode() {
         return sourceNode;
     }
 }
