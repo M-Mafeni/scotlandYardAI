@@ -41,6 +41,21 @@ public class DijkstraTest{
         assert(distances.get(new Node<>('D')) == 1);
         assert(distances.get(new Node<>('E')) == 2);
     }
+    @Test
+    public void checkPrevNodes(){
+        Graph<Character,Integer> testGraph = new UndirectedGraph<>();
+        List<Node<Character>> nodes = new ArrayList<>();
+        addNodes(testGraph,nodes);
+        addEdges(testGraph,nodes);
+        Dijkstra testDijkstra = new Dijkstra(testGraph,nodes.get(0));
+        Map<Node<Character>,Node<Character>> prevNodes = testDijkstra.getPrevNodes();
+        assert(prevNodes.get(new Node<>('A')) == null);
+        assert(prevNodes.get(new Node<>('B')).equals(new Node<>('D')));
+        assert(prevNodes.get(new Node<>('C')).equals(new Node<>('E')));
+        assert(prevNodes.get(new Node<>('D')).equals(new Node<>('A')));
+        assert(prevNodes.get(new Node<>('E')).equals(new Node<>('D')));
+
+    }
 
 
 }

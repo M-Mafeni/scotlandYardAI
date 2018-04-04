@@ -10,6 +10,7 @@ public class Dijkstra {
     private Node<Character> sourceNode;
     private Set<Node<Character>> unvisited,visited;
     private Map<Node<Character>,Integer> distances = new HashMap<>(); //map of nodes to their distances
+    private Map<Node<Character>,Node<Character>> prevNodes = new HashMap<>(); //map of nodes to previous nodes so we could get the shortest path
 
     public Dijkstra(Graph<Character,Integer> gameMap,Node<Character> sourceNode){
         this.sourceNode = sourceNode;
@@ -17,6 +18,7 @@ public class Dijkstra {
         unvisited = new HashSet<>(gameMap.getNodes()); //all nodes are unvisited at the start
         graph = gameMap;
         initDistances();
+        initPrevNode();
         while (unvisited.size()> 0) { // while there are still unvisited nodes
             visitUnknown();
         }
@@ -27,7 +29,6 @@ public class Dijkstra {
         // unvisited node with shortest distance from source node
         Node<Character> currentNode = getUnvisitedNode();
         Collection<Edge<Character,Integer>> edges = graph.getEdgesFrom(currentNode);
-        Set<Node<Character>> neighbours;
         for(Edge<Character,Integer> e: edges){
             int distance = distances.get(currentNode); // you want the distance from the
                                                       // current node to its unvisited neighbours
@@ -37,6 +38,7 @@ public class Dijkstra {
                 //if distance gotten is less than distance stored update it
                 if(distance < distances.get(neighbour)){
                     distances.put(neighbour,distance);
+                    prevNodes.put(neighbour,currentNode);
                 }
             }
         }
@@ -65,10 +67,20 @@ public class Dijkstra {
                 distances.put(u,INF); //distance from all other nodes should be infinity
         }
     }
+    //initialises the prev Nodes map
+    private void initPrevNode(){
+        for(Node<Character> u: unvisited){
+            prevNodes.put(u,null);
+        }
+    }
 
 
     public Map<Node<Character>, Integer> getDistances() {
         return distances;
+    }
+
+    public Map<Node<Character>, Node<Character>> getPrevNodes() {
+        return prevNodes;
     }
 
     public Node<Character> getSourceNode() {
