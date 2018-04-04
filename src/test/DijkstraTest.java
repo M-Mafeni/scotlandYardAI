@@ -20,10 +20,10 @@ public class DijkstraTest{
     }
     private void addNodes(Graph<Character,Integer> testGraph,List<Node<Character>> nodes){
         for(int a = 1;a <= 5;a++){
-            int b = a + 63;
-            char c = (char) b;
-            testGraph.addNode(new Node<>(c));
-            nodes.add(new Node<>(c));
+            int asc = a + 64; //  to get ASCII code
+            char letter = (char) asc;
+            testGraph.addNode(new Node<>(letter));
+            nodes.add(new Node<>(letter));
         }
     }
     private void addEdges(Graph<Character,Integer> testGraph,List<Node<Character>> nodes){
