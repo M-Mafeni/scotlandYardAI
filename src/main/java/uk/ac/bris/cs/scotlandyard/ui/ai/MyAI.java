@@ -1,9 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import uk.ac.bris.cs.gamekit.graph.Graph;
@@ -21,6 +18,8 @@ public class MyAI implements PlayerFactory {
 	// TODO create a new player here
 	@Override
 	public Player createPlayer(Colour colour) {
+		if(colour.isMrX())
+			return new MrXplayer();
 		return new MyPlayer();
 	}
 
@@ -38,13 +37,55 @@ public class MyAI implements PlayerFactory {
 
 		}
 	}
-	private static class MrXplayer implements Player{
+	private static class MrXplayer implements Player,MoveVisitor{
+		Graph<Integer,Integer> weightedGraph;
+		Dijkstra newPos;
+		private final Random random = new Random();
 		public void makeMove(ScotlandYardView view, int location, Set<Move> moves,
 							 Consumer<Move> callback) {
-			Graph<Integer,Integer> weightedGraph = weighGraph(view.getGraph());
+			weightedGraph = weighGraph(view.getGraph());
 			Dijkstra getScores = new Dijkstra(weightedGraph,new Node<>(location));
+			List<Node<Integer>> detectiveLoc = getDetectiveLoc(view); //stores all detective locations
+			Set<Move> possMoves = new HashSet<>(); //stores a list of possible moves mrX can make
+			int avgScore = score(view,getScores,detectiveLoc);
+			for(Move m: moves){
+				m.visit(this);
+				int newAvg = score(view,newPos,detectiveLoc);
+				if(newAvg >= avgScore){
+					possMoves.add(m);
+				}
+			}
+			if(possMoves.size() != 0)
+				callback.accept(new ArrayList<>(possMoves).get(random.nextInt(possMoves.size())));
+			else
+				callback.accept(new ArrayList<>(moves).get(random.nextInt(moves.size())));
+		}
+
+		@Override
+		public void visit(PassMove move) {
+
+		}
+
+		@Override
+		public void visit(DoubleMove move) {
+			newPos = new Dijkstra(weightedGraph,new Node<>(move.finalDestination()));
+		}
+
+		@Override
+		public void visit(TicketMove move) {
+			newPos = new Dijkstra(weightedGraph,new Node<>(move.destination()));
+		}
+
+		private int score(ScotlandYardView view, Dijkstra getScores, List<Node<Integer>> detectiveLoc){
 			int total = 0;
 			int avgScore;
+			for(Node<Integer> n: detectiveLoc){
+				total += getScores.getDistanceFrom(n);
+			}
+			avgScore = total/detectiveLoc.size();
+			return avgScore;
+		}
+		private List<Node<Integer>> getDetectiveLoc(ScotlandYardView view){
 			List<Node<Integer>> detectiveLoc = new ArrayList<>(); //stores all detective locations
 			for(Colour x:view.getPlayers()){
 				if(!x.isMrX()){
@@ -54,10 +95,8 @@ public class MyAI implements PlayerFactory {
 						throw new IllegalArgumentException("Location doesn't exist");
 				}
 			}
-			for(Node<Integer> n: detectiveLoc){
-				total += getScores.getDistanceFrom(n);
-			}
-			avgScore = total/detectiveLoc.size();
+			return detectiveLoc;
 		}
 	}
+
 }
