@@ -1,5 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai;
 import uk.ac.bris.cs.gamekit.graph.*;
+import uk.ac.bris.cs.scotlandyard.model.Transport;
 
 import java.util.*;
 
@@ -20,7 +21,6 @@ public class Dijkstra {
         while (unvisited.size()> 0) { // while there are still unvisited nodes
             visitUnknown();
         }
-        //For now let's assume that all edges have a weight of 1
     }
     //visits unvisited node with shortest distance from the source node
     private void visitUnknown(){
@@ -85,5 +85,24 @@ public class Dijkstra {
     public Node<Integer> getSourceNode() {
         return sourceNode;
     }
+
+    //takes in a graph for Scotland Yard and weighs the edges so you can calculate the distance
+    public static Graph<Integer,Integer> weighGraph(Graph<Integer,Transport> graph){
+        Graph<Integer,Integer> weightedGraph = new UndirectedGraph<>();
+        List<Node<Integer>> nodes = graph.getNodes(); //gets all the nodes in game graph
+        Collection<Edge<Integer,Transport>> edges = graph.getEdges(); //get all possible edges from a specific node
+        //add all nodes to weighted graph
+        for(Node<Integer> n : nodes){
+            weightedGraph.addNode(n);
+        }
+        for(Edge<Integer,Transport> e : edges){
+            //you shouldn't add ferry edges as detectives cannot use them
+            if(!e.data().equals(Transport.FERRY)){
+                weightedGraph.addEdge(new Edge<>(e.source(),e.destination(),1));//all edges are weighted at 1
+            }
+        }
+        return weightedGraph;
+    }
+
 }
 
