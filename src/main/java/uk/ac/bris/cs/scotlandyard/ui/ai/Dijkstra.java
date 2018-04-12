@@ -73,6 +73,13 @@ public class Dijkstra {
         }
     }
 
+    // get distance from any node
+    public int getDistanceFrom(Node<Integer> destination){
+        if(!distances.containsKey(destination))
+            throw new IllegalArgumentException("node doesn't exist");
+        return distances.get(destination);
+    }
+
 
     public Map<Node<Integer>, Integer> getDistances() {
         return distances;
