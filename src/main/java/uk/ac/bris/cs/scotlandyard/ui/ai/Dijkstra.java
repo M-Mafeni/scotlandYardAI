@@ -1,20 +1,18 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai;
 import uk.ac.bris.cs.gamekit.graph.*;
-import uk.ac.bris.cs.scotlandyard.model.*;
 
 import java.util.*;
 
 public class Dijkstra {
     private int INF = 1000;
-    private Graph<Character,Integer> graph;
-    private Node<Character> sourceNode;
-    private Set<Node<Character>> unvisited,visited;
-    private Map<Node<Character>,Integer> distances = new HashMap<>(); //map of nodes to their distances
-    private Map<Node<Character>,Node<Character>> prevNodes = new HashMap<>(); //map of nodes to previous nodes so we could get the shortest path
+    private Graph<Integer,Integer> graph;
+    private Node<Integer> sourceNode;
+    private Set<Node<Integer>> unvisited;
+    private Map<Node<Integer>,Integer> distances = new HashMap<>(); //map of nodes to their distances
+    private Map<Node<Integer>,Node<Integer>> prevNodes = new HashMap<>(); //map of nodes to previous nodes so we could get the shortest path
 
-    public Dijkstra(Graph<Character,Integer> gameMap,Node<Character> sourceNode){
+    public Dijkstra(Graph<Integer,Integer> gameMap,Node<Integer> sourceNode){
         this.sourceNode = sourceNode;
-        visited = new HashSet<>(); //no nodes are yet to be visited
         unvisited = new HashSet<>(gameMap.getNodes()); //all nodes are unvisited at the start
         graph = gameMap;
         initDistances();
@@ -27,12 +25,12 @@ public class Dijkstra {
     //visits unvisited node with shortest distance from the source node
     private void visitUnknown(){
         // unvisited node with shortest distance from source node
-        Node<Character> currentNode = getUnvisitedNode();
-        Collection<Edge<Character,Integer>> edges = graph.getEdgesFrom(currentNode);
-        for(Edge<Character,Integer> e: edges){
+        Node<Integer> currentNode = getUnvisitedNode();
+        Collection<Edge<Integer,Integer>> edges = graph.getEdgesFrom(currentNode);
+        for(Edge<Integer,Integer> e: edges){
             int distance = distances.get(currentNode); // you want the distance from the
                                                       // current node to its unvisited neighbours
-            Node<Character> neighbour = e.destination();
+            Node<Integer> neighbour = e.destination();
             if(unvisited.contains(neighbour)){ //if the neighbouring node is unvisited
                 distance += e.data(); //add the distance from
                 //if distance gotten is less than distance stored update it
@@ -42,25 +40,26 @@ public class Dijkstra {
                 }
             }
         }
-        visited.add(currentNode); //add current node to visited
         unvisited.remove(currentNode); // remove current node from unvisited
     }
 
     //get unvisited node by finding shortest distance from source node
-    private Node<Character> getUnvisitedNode(){
+    private Node<Integer> getUnvisitedNode(){
         int min = INF;
-        Node<Character> minNode = null;
-        for(Node<Character> u: unvisited){
+        Node<Integer> minNode = null;
+        for(Node<Integer> u: unvisited){
             if(distances.get(u) < min) {
                 minNode = u;
             }
         }
+        if(minNode == null)
+            throw new NullPointerException("error minNode doesn't exist");
         return minNode;
     }
     //initialises the distance map
     private void initDistances(){
         //distances from source node should be infinity at start
-        for(Node<Character> u: unvisited){
+        for(Node<Integer> u: unvisited){
             if(u.equals(sourceNode)) //distance from source node should be zero at first
                 distances.put(u,0);
             else
@@ -69,21 +68,21 @@ public class Dijkstra {
     }
     //initialises the prev Nodes map
     private void initPrevNode(){
-        for(Node<Character> u: unvisited){
+        for(Node<Integer> u: unvisited){
             prevNodes.put(u,null);
         }
     }
 
 
-    public Map<Node<Character>, Integer> getDistances() {
+    public Map<Node<Integer>, Integer> getDistances() {
         return distances;
     }
 
-    public Map<Node<Character>, Node<Character>> getPrevNodes() {
+    public Map<Node<Integer>, Node<Integer>> getPrevNodes() {
         return prevNodes;
     }
 
-    public Node<Character> getSourceNode() {
+    public Node<Integer> getSourceNode() {
         return sourceNode;
     }
 }
