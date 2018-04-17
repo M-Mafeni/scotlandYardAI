@@ -10,11 +10,9 @@ import uk.ac.bris.cs.scotlandyard.ai.PlayerFactory;
 import uk.ac.bris.cs.scotlandyard.model.*;
 import static uk.ac.bris.cs.scotlandyard.ui.ai.Dijkstra.weighGraph;
 
-// TODO name the AI
 @ManagedAI("Moriarty")
 public class MyAI implements PlayerFactory {
 
-	// TODO create a new player here
 	@Override
 	public Player createPlayer(Colour colour) {
 		if(colour.isMrX())
@@ -22,7 +20,6 @@ public class MyAI implements PlayerFactory {
 		return new MyPlayer();
 	}
 
-	// TODO A sample player that selects a random move
 	private static class MyPlayer implements Player {
 
 		private final Random random = new Random();
@@ -30,18 +27,17 @@ public class MyAI implements PlayerFactory {
 		@Override
 		public void makeMove(ScotlandYardView view, int location, Set<Move> moves,
 				Consumer<Move> callback) {
-			// TODO do something interesting here; find the best move
 			// picks a random move
 			callback.accept(new ArrayList<>(moves).get(random.nextInt(moves.size())));
 
 		}
 	}
 	private static class MrXplayer implements Player,MoveVisitor{
-		Graph<Integer,Integer> weightedGraph;
+		Graph<Integer,Integer> weightedGraph; //
 		Dijkstra newPos;
 		Graph<Integer,Transport> gameGraph;
 		private final Random random = new Random();
-		int bMax = 0;
+		int maxEdges = 0; //stores the max number of edges
 		Move bestMove = null;
 		public void makeMove(ScotlandYardView view, int location, Set<Move> moves,
 							 Consumer<Move> callback) {
@@ -49,16 +45,17 @@ public class MyAI implements PlayerFactory {
 			weightedGraph = weighGraph(gameGraph);
 			Dijkstra getScores = new Dijkstra(weightedGraph,new Node<>(location));
 			List<Node<Integer>> detectiveLoc = getDetectiveLoc(view); //stores all detective locations
-			Set<Move> possMoves = new HashSet<>(); //stores a list of possible moves mrX can make
+			Set<Move> bestMoves = new HashSet<>(); //stores a list of moves mrX can make
+			                                       // that will increase his distance from the detectives
 			int avgScore = score(getScores,detectiveLoc);
 			for(Move m: moves){
 				m.visit(this);
 				int newAvg = score(newPos,detectiveLoc);
-				if(newAvg >= avgScore){
-					possMoves.add(m);
+				if(newAvg >= avgScore){ //only add moves that have a higher score
+					bestMoves.add(m);
 				}
 			}
-			for(Move m : possMoves){
+			for(Move m : bestMoves){ //pick the move which goes to the node with the most edges
 				m.visit(this);
 			}
 
@@ -75,21 +72,26 @@ public class MyAI implements PlayerFactory {
 
 		@Override
 		public void visit(DoubleMove move) {
+			//calculate what the distance would be from the new destination
 			newPos = new Dijkstra(weightedGraph,new Node<>(move.finalDestination()));
-			if(gameGraph.getEdgesFrom(new Node<>(move.finalDestination())).size() > bMax){
+			if(gameGraph.getEdgesFrom(new Node<>(move.finalDestination())).size() >= maxEdges){
 				bestMove = move;
+				maxEdges = gameGraph.getEdgesFrom(new Node<>(move.finalDestination())).size();
 			}
 		}
 
 		@Override
 		public void visit(TicketMove move) {
+			//calculate what the distance would be from the new destination
 			newPos = new Dijkstra(weightedGraph,new Node<>(move.destination()));
-			if(gameGraph.getEdgesFrom(new Node<>(move.destination())).size() > bMax){
+
+			if(gameGraph.getEdgesFrom(new Node<>(move.destination())).size() >= maxEdges){
 				bestMove = move;
+				maxEdges = gameGraph.getEdgesFrom(new Node<>(move.destination())).size();
 			}
 		}
 
-
+		//averages the distances from mrX to the detective
 		private int score(Dijkstra getScores, List<Node<Integer>> detectiveLoc){
 			int total = 0;
 			int avgScore;
