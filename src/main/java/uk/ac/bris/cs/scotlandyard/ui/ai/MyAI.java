@@ -8,7 +8,6 @@ import uk.ac.bris.cs.gamekit.graph.Node;
 import uk.ac.bris.cs.scotlandyard.ai.ManagedAI;
 import uk.ac.bris.cs.scotlandyard.ai.PlayerFactory;
 import uk.ac.bris.cs.scotlandyard.model.*;
-import uk.ac.bris.cs.scotlandyard.ui.ai.Dijkstra;
 import static uk.ac.bris.cs.scotlandyard.ui.ai.Dijkstra.weighGraph;
 
 // TODO name the AI
@@ -40,29 +39,30 @@ public class MyAI implements PlayerFactory {
 	private static class MrXplayer implements Player,MoveVisitor{
 		Graph<Integer,Integer> weightedGraph;
 		Dijkstra newPos;
+		Graph<Integer,Transport> gameGraph;
 		private final Random random = new Random();
+		int bMax = 0;
+		Move bestMove = null;
 		public void makeMove(ScotlandYardView view, int location, Set<Move> moves,
 							 Consumer<Move> callback) {
-			weightedGraph = weighGraph(view.getGraph());
+			gameGraph = view.getGraph();
+			weightedGraph = weighGraph(gameGraph);
 			Dijkstra getScores = new Dijkstra(weightedGraph,new Node<>(location));
 			List<Node<Integer>> detectiveLoc = getDetectiveLoc(view); //stores all detective locations
 			Set<Move> possMoves = new HashSet<>(); //stores a list of possible moves mrX can make
-            int max = 0;
-            Move bestMove = null;
 			int avgScore = score(getScores,detectiveLoc);
 			for(Move m: moves){
 				m.visit(this);
 				int newAvg = score(newPos,detectiveLoc);
 				if(newAvg >= avgScore){
 					possMoves.add(m);
-					if(max < newAvg ){
-					    max = newAvg;
-					    //the best move is the one which put mrX the farthest from the detectives
-					    bestMove = m;
-                    }
 				}
 			}
-			if(possMoves.size() != 0 && bestMove != null)
+			for(Move m : possMoves){
+				m.visit(this);
+			}
+
+			if(bestMove != null)
 				callback.accept(bestMove);
 			else
 				callback.accept(new ArrayList<>(moves).get(random.nextInt(moves.size())));
@@ -76,12 +76,19 @@ public class MyAI implements PlayerFactory {
 		@Override
 		public void visit(DoubleMove move) {
 			newPos = new Dijkstra(weightedGraph,new Node<>(move.finalDestination()));
+			if(gameGraph.getEdgesFrom(new Node<>(move.finalDestination())).size() > bMax){
+				bestMove = move;
+			}
 		}
 
 		@Override
 		public void visit(TicketMove move) {
 			newPos = new Dijkstra(weightedGraph,new Node<>(move.destination()));
+			if(gameGraph.getEdgesFrom(new Node<>(move.destination())).size() > bMax){
+				bestMove = move;
+			}
 		}
+
 
 		private int score(Dijkstra getScores, List<Node<Integer>> detectiveLoc){
 			int total = 0;

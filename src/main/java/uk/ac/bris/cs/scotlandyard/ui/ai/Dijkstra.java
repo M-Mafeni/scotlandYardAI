@@ -94,7 +94,7 @@ public class Dijkstra {
     }
 
     //takes in a graph for Scotland Yard and weighs the edges so you can calculate the distance
-    public static Graph<Integer,Integer> weighGraph(Graph<Integer,Transport> graph){
+    static Graph<Integer,Integer> weighGraph(Graph<Integer, Transport> graph){
         Graph<Integer,Integer> weightedGraph = new UndirectedGraph<>();
         List<Node<Integer>> nodes = graph.getNodes(); //gets all the nodes in game graph
         Collection<Edge<Integer,Transport>> edges = graph.getEdges(); //get all possible edges from a specific node
@@ -105,11 +105,25 @@ public class Dijkstra {
         for(Edge<Integer,Transport> e : edges){
             //you shouldn't add ferry edges as detectives cannot use them
             if(!e.data().equals(Transport.FERRY)){
-                weightedGraph.addEdge(new Edge<>(e.source(),e.destination(),1));//all edges are weighted at 1
+                int weight = getWeight(e.data());
+                weightedGraph.addEdge(new Edge<>(e.source(),e.destination(),weight));//all edges are weighted at 1
             }
         }
         return weightedGraph;
     }
-
+    private static int getWeight(Transport x){
+        int weight = 0;
+        switch (x){
+            case TAXI:
+                weight = 1;
+                break;
+            case BUS:
+                weight = 4;
+                break;
+            case UNDERGROUND:
+                weight = 8;
+        }
+        return weight;
+    }
 }
 
