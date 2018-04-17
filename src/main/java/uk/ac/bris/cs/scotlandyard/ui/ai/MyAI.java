@@ -47,16 +47,23 @@ public class MyAI implements PlayerFactory {
 			Dijkstra getScores = new Dijkstra(weightedGraph,new Node<>(location));
 			List<Node<Integer>> detectiveLoc = getDetectiveLoc(view); //stores all detective locations
 			Set<Move> possMoves = new HashSet<>(); //stores a list of possible moves mrX can make
-			int avgScore = score(view,getScores,detectiveLoc);
+            int max = 0;
+            Move bestMove = null;
+			int avgScore = score(getScores,detectiveLoc);
 			for(Move m: moves){
 				m.visit(this);
-				int newAvg = score(view,newPos,detectiveLoc);
+				int newAvg = score(newPos,detectiveLoc);
 				if(newAvg >= avgScore){
 					possMoves.add(m);
+					if(max < newAvg ){
+					    max = newAvg;
+					    //the best move is the one which put mrX the farthest from the detectives
+					    bestMove = m;
+                    }
 				}
 			}
-			if(possMoves.size() != 0)
-				callback.accept(new ArrayList<>(possMoves).get(random.nextInt(possMoves.size())));
+			if(possMoves.size() != 0 && bestMove != null)
+				callback.accept(bestMove);
 			else
 				callback.accept(new ArrayList<>(moves).get(random.nextInt(moves.size())));
 		}
@@ -76,7 +83,7 @@ public class MyAI implements PlayerFactory {
 			newPos = new Dijkstra(weightedGraph,new Node<>(move.destination()));
 		}
 
-		private int score(ScotlandYardView view, Dijkstra getScores, List<Node<Integer>> detectiveLoc){
+		private int score(Dijkstra getScores, List<Node<Integer>> detectiveLoc){
 			int total = 0;
 			int avgScore;
 			for(Node<Integer> n: detectiveLoc){
