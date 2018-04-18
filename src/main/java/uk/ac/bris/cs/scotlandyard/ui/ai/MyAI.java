@@ -37,28 +37,23 @@ public class MyAI implements PlayerFactory {
 		Dijkstra newPos;
 		Graph<Integer,Transport> gameGraph;
 		private final Random random = new Random();
-		int maxEdges = 0; //stores the max number of edges
-		Move bestMove = null;
 		public void makeMove(ScotlandYardView view, int location, Set<Move> moves,
 							 Consumer<Move> callback) {
+			Move bestMove = null;
+			int max = 0;
 			gameGraph = view.getGraph();
 			weightedGraph = weighGraph(gameGraph);
 			Dijkstra getScores = new Dijkstra(weightedGraph,new Node<>(location));
 			List<Node<Integer>> detectiveLoc = getDetectiveLoc(view); //stores all detective locations
-			Set<Move> bestMoves = new HashSet<>(); //stores a list of moves mrX can make
-			                                       // that will increase his distance from the detectives
 			int avgScore = score(getScores,detectiveLoc);
 			for(Move m: moves){
 				m.visit(this);
 				int newAvg = score(newPos,detectiveLoc);
 				if(newAvg >= avgScore){ //only add moves that have a higher score
-					bestMoves.add(m);
+					if(newAvg > max)
+						bestMove = m;
 				}
 			}
-			for(Move m : bestMoves){ //pick the move which goes to the node with the most edges
-				m.visit(this);
-			}
-
 			if(bestMove != null)
 				callback.accept(bestMove);
 			else
@@ -74,21 +69,12 @@ public class MyAI implements PlayerFactory {
 		public void visit(DoubleMove move) {
 			//calculate what the distance would be from the new destination
 			newPos = new Dijkstra(weightedGraph,new Node<>(move.finalDestination()));
-			if(gameGraph.getEdgesFrom(new Node<>(move.finalDestination())).size() >= maxEdges){
-				bestMove = move;
-				maxEdges = gameGraph.getEdgesFrom(new Node<>(move.finalDestination())).size();
-			}
 		}
 
 		@Override
 		public void visit(TicketMove move) {
 			//calculate what the distance would be from the new destination
 			newPos = new Dijkstra(weightedGraph,new Node<>(move.destination()));
-
-			if(gameGraph.getEdgesFrom(new Node<>(move.destination())).size() >= maxEdges){
-				bestMove = move;
-				maxEdges = gameGraph.getEdgesFrom(new Node<>(move.destination())).size();
-			}
 		}
 
 		//averages the distances from mrX to the detective

@@ -5,7 +5,7 @@ import uk.ac.bris.cs.scotlandyard.model.Transport;
 import java.util.*;
 
 public class Dijkstra {
-    private int INF = 1000;
+    private int INF = 1000000000;
     private Graph<Integer,Integer> graph;
     private Node<Integer> sourceNode;
     private Set<Node<Integer>> unvisited;
@@ -118,10 +118,10 @@ public class Dijkstra {
                 weight = 1;
                 break;
             case BUS:
-                weight = 4;
+                weight = 1;
                 break;
             case UNDERGROUND:
-                weight = 8;
+                weight = 1;
         }
         return weight;
     }
