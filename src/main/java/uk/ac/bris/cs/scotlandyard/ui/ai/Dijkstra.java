@@ -111,6 +111,7 @@ public class Dijkstra {
         }
         return weightedGraph;
     }
+    //returns a weight for the specified transport
     private static int getWeight(Transport x){
         int weight = 0;
         switch (x){
