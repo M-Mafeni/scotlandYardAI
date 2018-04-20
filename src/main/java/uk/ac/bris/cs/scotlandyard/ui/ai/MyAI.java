@@ -9,6 +9,9 @@ import uk.ac.bris.cs.scotlandyard.ai.ManagedAI;
 import uk.ac.bris.cs.scotlandyard.ai.PlayerFactory;
 import uk.ac.bris.cs.scotlandyard.model.*;
 import static uk.ac.bris.cs.scotlandyard.ui.ai.Dijkstra.weighGraph;
+/* AI program for mr X which works by
+  picking the move which will put him furthest from the detectives
+*/
 
 @ManagedAI("Moriarty")
 public class MyAI implements PlayerFactory {
