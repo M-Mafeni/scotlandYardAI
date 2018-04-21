@@ -89,7 +89,7 @@ public class MyAI implements PlayerFactory {
 		//averages the distances from mrX to the detective
 		private double score(Dijkstra getScores, List<Node<Integer>> detectiveLoc){
 			int total = 0;
-			int avgScore;
+			double avgScore;
 			for(Node<Integer> n: detectiveLoc){
 				total += getScores.getDistanceFrom(n);
 			}
