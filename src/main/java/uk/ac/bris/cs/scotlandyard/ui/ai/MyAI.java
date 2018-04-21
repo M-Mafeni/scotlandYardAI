@@ -45,20 +45,21 @@ public class MyAI implements PlayerFactory {
 		public void makeMove(ScotlandYardView view, int location, Set<Move> moves,
 							 Consumer<Move> callback) {
 			Move bestMove = null;
-			int max = 0;
+			double max = 0;
 			gameGraph = view.getGraph();
 			weightedGraph = weighGraph(gameGraph);
 			//contains the distances from all nodes to mr X's location
 			Dijkstra getScores = new Dijkstra(weightedGraph,new Node<>(location));
 			List<Node<Integer>> detectiveLoc = getDetectiveLoc(view); //stores all detective locations
-			int avgScore = score(getScores,detectiveLoc);
+			double avgScore = score(getScores,detectiveLoc);
 			for(Move m: moves){
 				m.visit(this);
-				int newAvg = score(newPos,detectiveLoc);
+				double newAvg = score(newPos,detectiveLoc);
 				if(newAvg >= avgScore){ //only add moves that have a higher score
 					if(newAvg > max)
 						//the best move is the one which increases the distance from the detectives the most
 						bestMove = m;
+						max = newAvg;
 				}
 			}
 			if(bestMove != null)
@@ -86,7 +87,7 @@ public class MyAI implements PlayerFactory {
 		}
 
 		//averages the distances from mrX to the detective
-		private int score(Dijkstra getScores, List<Node<Integer>> detectiveLoc){
+		private double score(Dijkstra getScores, List<Node<Integer>> detectiveLoc){
 			int total = 0;
 			int avgScore;
 			for(Node<Integer> n: detectiveLoc){
