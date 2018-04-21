@@ -3,10 +3,9 @@ import uk.ac.bris.cs.gamekit.graph.*;
 import uk.ac.bris.cs.scotlandyard.ui.ai.Dijkstra;
 import java.util.*;
 
-
+// Checks that Dijkstra implementation produces the correct graph, distances and previous nodes
 public class DijkstraTest{
-
-    //nodes based on pic I sent you
+    // Generate the nodes for the graph
     private void addNodes(Graph<Integer,Integer> testGraph,List<Node<Integer>> nodes){
         for(int a = 1;a <= 5;a++){
             int asc = a + 64; //  to get ASCII code
@@ -14,7 +13,8 @@ public class DijkstraTest{
             nodes.add(new Node<>(asc));
         }
     }
-    //edges based on pic I sent you
+
+    // Generate edges between the nodes for the graph
     private void addEdges(Graph<Integer,Integer> testGraph,List<Node<Integer>> nodes){
         testGraph.addEdge(new Edge<>( nodes.get(0),nodes.get(3), 1));
         testGraph.addEdge(new Edge<>(nodes.get(0),nodes.get(1),6));
@@ -25,7 +25,7 @@ public class DijkstraTest{
         testGraph.addEdge(new Edge<>(nodes.get(2),nodes.get(4),5));
     }
 
-    // to check graph works correctly at the end
+    // Checks that the shortest distances from the source node are correct
     @Test
     public void checkFinalDistances(){
         Graph<Integer,Integer> testGraph = new UndirectedGraph<>();
@@ -40,6 +40,8 @@ public class DijkstraTest{
         assert(distances.get(new Node<>(68)) == 1);
         assert(distances.get(new Node<>(69)) == 2);
     }
+
+    // Checks that the previous node accessed is correct for each node
     @Test
     public void checkPrevNodes(){
         Graph<Integer,Integer> testGraph = new UndirectedGraph<>();

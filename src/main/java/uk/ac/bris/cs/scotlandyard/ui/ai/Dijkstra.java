@@ -4,6 +4,8 @@ import uk.ac.bris.cs.scotlandyard.model.Transport;
 
 import java.util.*;
 
+// An implementation of Dijkstra's algorithm to find the shortest node from the source node to each node.
+
 public class Dijkstra {
     private int INF = 1000000000;
     private Graph<Integer,Integer> graph;
@@ -22,9 +24,10 @@ public class Dijkstra {
             visitUnknown();
         }
     }
-    //visits unvisited node with shortest distance from the source node
+
+    // Visits unvisited node with shortest distance from the source node
     private void visitUnknown(){
-        // unvisited node with shortest distance from source node
+        // Unvisited node with shortest distance from source node
         Node<Integer> currentNode = getUnvisitedNode();
         Collection<Edge<Integer,Integer>> edges = graph.getEdgesFrom(currentNode);
         for(Edge<Integer,Integer> e: edges){
@@ -43,7 +46,7 @@ public class Dijkstra {
         unvisited.remove(currentNode); // remove current node from unvisited
     }
 
-    //get unvisited node by finding shortest distance from source node
+    // Gets the unvisited node with the shortest distance from source node
     private Node<Integer> getUnvisitedNode(){
         int min = INF;
         Node<Integer> minNode = null;
@@ -56,7 +59,8 @@ public class Dijkstra {
             throw new NullPointerException("error minNode doesn't exist");
         return minNode;
     }
-    //initialises the distance map
+
+    // Initialises the distance map
     private void initDistances(){
         //distances from source node should be infinity at start
         for(Node<Integer> u: unvisited){
@@ -66,34 +70,37 @@ public class Dijkstra {
                 distances.put(u,INF); //distance from all other nodes should be infinity
         }
     }
-    //initialises the prev Nodes map
+
+    // Initialises the prev Nodes map
     private void initPrevNode(){
         for(Node<Integer> u: unvisited){
-            prevNodes.put(u,null);
+            prevNodes.put(u,null); //no other nodes were previously visited
         }
     }
 
-    // get distance from any node
+    // Get distance from any node
     public int getDistanceFrom(Node<Integer> destination){
         if(!distances.containsKey(destination))
             throw new IllegalArgumentException("node doesn't exist");
         return distances.get(destination);
     }
 
-
+    // Returns the shortest distance from the source node to the given node
     public Map<Node<Integer>, Integer> getDistances() {
         return distances;
     }
 
+    // Returns the node previously accessed for a given node
     public Map<Node<Integer>, Node<Integer>> getPrevNodes() {
         return prevNodes;
     }
 
+    // Returns the source node
     public Node<Integer> getSourceNode() {
         return sourceNode;
     }
 
-    //takes in a graph for Scotland Yard and weighs the edges so you can calculate the distance
+    // Takes in a graph for Scotland Yard and weighs the edges so you can calculate the distance
     static Graph<Integer,Integer> weighGraph(Graph<Integer, Transport> graph){
         Graph<Integer,Integer> weightedGraph = new UndirectedGraph<>();
         List<Node<Integer>> nodes = graph.getNodes(); //gets all the nodes in game graph
@@ -111,7 +118,8 @@ public class Dijkstra {
         }
         return weightedGraph;
     }
-    //returns a weight for the specified transport
+
+    // Returns a weight for the specified transport
     private static int getWeight(Transport x){
         int weight = 0;
         switch (x){
