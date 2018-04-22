@@ -7,7 +7,7 @@ import java.util.*;
 // An implementation of Dijkstra's algorithm to find the shortest node from the source node to each node.
 
 public class Dijkstra {
-    private int INF = 1000000000;
+    private int INF = Integer.MAX_VALUE; // as a stand in for infinity
     private Graph<Integer,Integer> graph;
     private Node<Integer> sourceNode;
     private Set<Node<Integer>> unvisited;
