@@ -7,9 +7,9 @@ import java.util.*;
 // An implementation of Dijkstra's algorithm to find the shortest node from the source node to each node.
 
 public class Dijkstra {
-    private int INF = Integer.MAX_VALUE; // as a stand in for infinity
-    private Graph<Integer,Integer> graph;
-    private Node<Integer> sourceNode;
+    private final int INF = Integer.MAX_VALUE; // as a stand in for infinity
+    private final Graph<Integer,Integer> graph;
+    private final Node<Integer> sourceNode;
     private Set<Node<Integer>> unvisited;
     private Map<Node<Integer>,Integer> distances = new HashMap<>(); //map of nodes to their distances
     private Map<Node<Integer>,Node<Integer>> prevNodes = new HashMap<>(); //map of nodes to previous nodes so we could get the shortest path
@@ -53,6 +53,7 @@ public class Dijkstra {
         for(Node<Integer> u: unvisited){
             if(distances.get(u) < min) {
                 minNode = u;
+                min = distances.get(u);
             }
         }
         if(minNode == null)
