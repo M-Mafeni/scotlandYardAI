@@ -1,4 +1,5 @@
-package java;
+package dijkstra;
+
 import org.junit.Test;
 import uk.ac.bris.cs.gamekit.graph.*;
 import uk.ac.bris.cs.scotlandyard.ui.ai.Dijkstra;
@@ -9,9 +10,9 @@ public class DijkstraTest{
     // Generate the nodes for the graph
     private void addNodes(Graph<Integer,Integer> testGraph,List<Node<Integer>> nodes){
         for(int a = 1;a <= 5;a++){
-            int asc = a + 64; //  to get ASCII code
-            testGraph.addNode(new Node<>(asc));
-            nodes.add(new Node<>(asc));
+            int b = a + 64;
+            testGraph.addNode(new Node<>(b));
+            nodes.add(new Node<>(b));
         }
     }
 
